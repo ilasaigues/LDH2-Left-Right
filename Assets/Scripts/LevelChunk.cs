@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class LevelChunk : MonoBehaviour
 {
+    public static Vector2Int size = new Vector2Int(32, 16);
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,5 +16,17 @@ public class LevelChunk : MonoBehaviour
     void Update()
     {
 
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                Gizmos.DrawWireCube(transform.position + new Vector3(x-.5f, y, 0), Vector3.one);
+            }
+        }
     }
 }

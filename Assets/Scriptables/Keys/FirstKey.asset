@@ -9,6 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 048224471a4b8ba49b4edaac956842b1, type: 3}
-  m_Name: FirstChunk
+  m_Script: {fileID: 11500000, guid: d0bb4bdfe236aae4a8dfd29f6e4a7dbb, type: 3}
+  m_Name: FirstKey
   m_EditorClassIdentifier: 
+  color: {r: 0, g: 1, b: 1, a: 1}

@@ -18,14 +18,20 @@ public class CharacterController : MonoBehaviour
     public Transform[] edgesTop;
     public Transform[] edgesBottom;
 
-    public LayerMask collisionRaycastMask; //TODO: change this to a layer manager of some sort
-
     private Rigidbody2D _rb2d;
     private Vector2 velocity;
     bool grounded = false;
 
     float currentJumpTime;
     float targetGravity;
+    bool justStomped;
+
+    private List<KeyData> acquiredKeys = new List<KeyData>();
+
+    private RespawnPoint lastRespawn;
+    private Vector3 lastRespawnPos;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -43,8 +49,22 @@ public class CharacterController : MonoBehaviour
     {
         HandleInput();
         HandleCollisions();
-
         _rb2d.MovePosition((Vector2)transform.position + velocity);
+    }
+
+
+    public void AddKey(KeyData key)
+    {
+        if (!acquiredKeys.Contains(key)) acquiredKeys.Add(key);
+
+    }
+    public bool CanOpenDoor(Door door)
+    {
+        if (acquiredKeys.Count > 0)
+        {
+            Debug.Log("Door key: " + door.key.name + ", have: " + acquiredKeys[0].name);
+        }
+        return acquiredKeys.Contains(door.key);
     }
 
     void HandleInput()
@@ -94,14 +114,14 @@ public class CharacterController : MonoBehaviour
         {
             foreach (var edge in edgesLeft)
             {
-                horizontalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.left, Mathf.Abs(velocity.x), Layers.MASK_FLOOR | Layers.MASK_PLATFORM));
+                horizontalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.left, Mathf.Abs(velocity.x), Layers.MASK_MOVEMENT));
             }
         }
         else if (velocity.x > 0)
         {
             foreach (var edge in edgesRight)
             {
-                horizontalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.right, velocity.x, Layers.MASK_FLOOR | Layers.MASK_PLATFORM));
+                horizontalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.right, velocity.x, Layers.MASK_MOVEMENT));
             }
         }
         foreach (RaycastHit2D rch in horizontalCollisions)
@@ -112,6 +132,8 @@ public class CharacterController : MonoBehaviour
                 {
                     velocity.x = rch.distance * Mathf.Sign(velocity.x);
                 }
+                CheckForCollidable(rch.collider);
+
             }
         }
 
@@ -123,7 +145,7 @@ public class CharacterController : MonoBehaviour
             {
                 foreach (var edge in edgesBottom)
                 {
-                    verticalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.down, Mathf.Abs(velocity.y), Layers.MASK_FLOOR | Layers.MASK_PLATFORM));
+                    verticalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.down, Mathf.Abs(velocity.y), Layers.MASK_MOVEMENT));
                 }
             }
             else if (velocity.y > 0)
@@ -133,18 +155,24 @@ public class CharacterController : MonoBehaviour
                     verticalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.up, velocity.y, Layers.MASK_FLOOR));
                 }
             }
+
             foreach (RaycastHit2D rch in verticalCollisions)
             {
                 if (rch.collider != null)
                 {
-                    if (velocity.y < 0)
+                    CheckForCollidable(rch.collider);
+                    if (!justStomped)
                     {
-                        grounded = true;
+                        if (velocity.y < 0)
+                        {
+                            grounded = true;
+                        }
+                        if (Mathf.Abs(velocity.y) > rch.distance)
+                        {
+                            velocity.y = rch.distance * Mathf.Sign(velocity.y);
+                        }
                     }
-                    if (Mathf.Abs(velocity.y) > rch.distance)
-                    {
-                        velocity.y = rch.distance * Mathf.Sign(velocity.y);
-                    }
+                    justStomped = false;
                 }
             }
         }
@@ -152,13 +180,17 @@ public class CharacterController : MonoBehaviour
         {
             foreach (var edge in edgesBottom)
             {
-                verticalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.down, 1, Layers.MASK_FLOOR | Layers.MASK_PLATFORM));
+                verticalCollisions.Add(Physics2D.Raycast(edge.position, Vector2.down, .1f, Layers.MASK_MOVEMENT));
             }
             int collCount = 0;
 
             foreach (var coll in verticalCollisions)
             {
-                if (coll.collider != null) collCount++;
+                if (coll.collider != null)
+                {
+                    CheckForCollidable(coll.collider);
+                    collCount++;
+                }
             }
             if (collCount == 0)
             {
@@ -167,7 +199,34 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    public void EnemyStomped()
+    {
+        velocity.y = Mathf.Abs(velocity.y);
+        grounded = false;
+        justStomped = true;
+    }
 
+
+    public void Kill()
+    {
+        transform.position = lastRespawnPos;
+    }
+
+
+    public void SetRespawnPoint(RespawnPoint point)
+    {
+        lastRespawn = point;
+        lastRespawnPos = point.transform.position;
+        Debug.Log("Set respawn point");
+    }
+
+    void CheckForCollidable(Collider2D collider)
+    {
+        if (collider.GetComponent<ICollidable>() != null)
+        {
+            collider.GetComponent<ICollidable>().CollidedWithCharacterController(this);
+        }
+    }
 
     private void OnDrawGizmos()
     {
