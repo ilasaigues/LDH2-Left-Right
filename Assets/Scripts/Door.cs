@@ -35,7 +35,7 @@ public class Door : MonoBehaviour, ICollidable
         {
             OnDoorOpen(key);
             OnDoorOpen -= DoorOpened;
-            Destroy(Instantiate(doorOpenSoundPrefab), doorOpenSoundPrefab.clip.length);
+            Destroy(Instantiate(doorOpenSoundPrefab).gameObject, doorOpenSoundPrefab.clip.length);
         }
     }
     private void OnDrawGizmos()

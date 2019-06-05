@@ -31,8 +31,7 @@ public class CharacterController : MonoBehaviour
 
     private Rigidbody2D _rb2d;
 
-    public Vector2 Velocity { get { return new Vector2(velocity.x, velocity.y); } }
-    private Vector2 velocity;
+    public Vector2 velocity;
     bool grounded = false;
 
     float currentJumpTime;
@@ -45,7 +44,7 @@ public class CharacterController : MonoBehaviour
     private RespawnPoint lastRespawn;
     private Vector3 lastRespawnPos;
 
-
+    private bool locked = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -59,8 +58,14 @@ public class CharacterController : MonoBehaviour
 
     }
 
+    public void Lock()
+    {
+        locked = true;
+    }
+
     void FixedUpdate()
     {
+        if (locked) return;
         HandleInput();
         HandleCollisions();
         _rb2d.MovePosition((Vector2)transform.position + velocity);

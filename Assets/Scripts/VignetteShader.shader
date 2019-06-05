@@ -1,8 +1,9 @@
-﻿Shader "Hidden/FisheyeShader"
+﻿Shader "Hidden/VignetteShader"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+		_Intensity("Intensity",range(-1,1)) = 0
     }
     SubShader
     {
@@ -38,16 +39,16 @@
             }
 
             sampler2D _MainTex;
+			float _Intensity;
 
             fixed4 frag (v2f i) : SV_Target
             {
-				fixed2 distToCentre = fixed2(i.uv.x-.5,i.uv.y-.5);
-				i.uv.y = i.uv.y*2-1;
-				i.uv.y -= distToCentre.x*distToCentre.x*distToCentre.y;
-				i.uv.y = (i.uv.y+1)/2;
-				fixed4 col = tex2D(_MainTex, i.uv);
+				fixed2 distToCentre = abs(fixed2(i.uv.x-.5,i.uv.y-.5));
+
+
+
+                fixed4 col = lerp(float4(.9,.9,.9,1),tex2D(_MainTex, i.uv),min(1,1-(length(distToCentre)+_Intensity)));
                 // just invert the colors
-                //col.rgb = 1 - col.rgb;
                 return col;
             }
             ENDCG

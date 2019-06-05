@@ -14,12 +14,17 @@ public class KeyEntity : MonoBehaviour
 
 
     Vector3 startLocalPos;
+    private void Awake()
+    {
+        startLocalPos = transform.localPosition;
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
         OnKeyPickup += KeyPickedUp;
         GetComponent<SpriteRenderer>().color = data.color;
-        startLocalPos = transform.localPosition;
     }
 
     // Update is called once per frame
@@ -38,7 +43,7 @@ public class KeyEntity : MonoBehaviour
         CharacterController character = collision.gameObject.GetComponent<CharacterController>();
         if (character)
         {
-            Destroy(Instantiate(pickupSoundSource), pickupSoundSource.clip.length);
+            Destroy(Instantiate(pickupSoundSource).gameObject, pickupSoundSource.clip.length);
             character.AddKey(data);
             OnKeyPickup(data);
             OnKeyPickup -= KeyPickedUp;

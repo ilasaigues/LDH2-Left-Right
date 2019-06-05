@@ -22,9 +22,13 @@ public class Level : MonoBehaviour
         {
             spike.GetComponent<Tilemap>().color = hazardColor;
         }
+
         foreach (var enemy in GetComponentsInChildren<Enemy>())
         {
-            enemy.GetComponent<SpriteRenderer>().color = hazardColor;
+            foreach (var renderer in enemy.GetComponentsInChildren<SpriteRenderer>())
+            {
+                renderer.color = hazardColor;
+            }
         }
     }
 

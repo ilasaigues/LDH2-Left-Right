@@ -9,6 +9,8 @@ public class SmoothCameraFollow : MonoBehaviour
     public Transform target;
     public Vector3 followOffset;
     public float verticalOffsetPower;
+    public bool verticalLock = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,28 +23,24 @@ public class SmoothCameraFollow : MonoBehaviour
         if (target != null)
         {
             Vector3 newPos = target.transform.position;
-            //newPos.y = LevelChunk.size.y * (+.25f)f + (newPos.y + .5f) / 2;
-            float height = (Mathf.FloorToInt((target.position.y + .5f) / LevelChunk.size.y) * LevelChunk.size.y);
-            float heightOffset = (LevelChunk.size.y - 1) / 2f;
 
-            Vector2 cameraPixelSize = new Vector2(Camera.main.pixelWidth, Camera.main.pixelHeight);
+            if (!verticalLock)
+            {
+                float height = (Mathf.FloorToInt((target.position.y + .5f) / LevelChunk.size.y) * LevelChunk.size.y);
+                float heightOffset = (LevelChunk.size.y - 1) / 2f;
 
-            Vector2 screenCenter = cameraPixelSize / 2;
-            /* Vector2 mousePosition = Input.mousePosition;
-             mousePosition.x = Mathf.Clamp(mousePosition.x, 0, cameraPixelSize.x);
-             mousePosition.y = Mathf.Clamp(mousePosition.y, 0, cameraPixelSize.y);
-             Vector2 mouseOffsetDirection = (mousePosition - screenCenter);
+                Vector2 cameraPixelSize = new Vector2(Camera.main.pixelWidth, Camera.main.pixelHeight);
 
-            mouseOffsetDirection = mouseOffsetDirection / screenCenter.y * mouseOffsetMultiplier;
-            mouseOffsetDirection = mouseOffsetDirection.normalized * Mathf.Sqrt(mouseOffsetDirection.magnitude);*/
+                Vector2 screenCenter = cameraPixelSize / 2;
 
-            Vector3 verticaloffset = new Vector3(0, Input.GetAxis("Vertical"), 0);
 
-            //float smoothOffset = ((((target.position.y - height) / LevelChunk.size.y) - .5f) / 2) * LevelChunk.size.y;
-            newPos.y = height + heightOffset;
-            newPos += verticaloffset* verticalOffsetPower + followOffset;
+                Vector3 verticaloffset = new Vector3(0, Input.GetAxis("Vertical"), 0);
 
-            transform.position = Vector3.Lerp(transform.position, newPos, lerp);
+                newPos.y = height + heightOffset;
+                newPos += verticaloffset * verticalOffsetPower;
+            }
+
+            transform.position = Vector3.Lerp(transform.position, newPos + followOffset, lerp);
         }
     }
 }
