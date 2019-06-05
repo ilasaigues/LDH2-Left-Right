@@ -18,15 +18,10 @@ public class LevelChunk : MonoBehaviour
 
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        for (int x = 0; x < size.x; x++)
-        {
-            for (int y = 0; y < size.y; y++)
-            {
-                Gizmos.DrawWireCube(transform.position + new Vector3(x-.5f, y, 0), Vector3.one);
-            }
-        }
+        Vector3 centerPos = new Vector3(size.x / 2 - 1, size.y / 2 - .5f, 0);
+        Gizmos.DrawWireCube(transform.position + centerPos, (Vector2)size);
     }
 }

@@ -7,23 +7,37 @@ public class CharacterController : MonoBehaviour
 
     public float moveSpeed;
     public float jumpPower;
-
+    [Range(0, 1)]
+    public float jumpMultPerExtraJump = .75f;
     public float upwardsGravity = 9;
     public float downwardsGravity = 18;
+    public float terminalVelocity;
 
     public float minJumpTime = .3f;
+    public float jumpCooldown = .15f;
+
+    public ParticleSystem respawnParticles;
+    public AudioSource playerDeathSoundPrefab;
 
     public Transform[] edgesRight;
     public Transform[] edgesLeft;
     public Transform[] edgesTop;
     public Transform[] edgesBottom;
 
+    public int maxJumps = 1;
+
+
+    private int currentJumps = 1;
+
     private Rigidbody2D _rb2d;
+
+    public Vector2 Velocity { get { return new Vector2(velocity.x, velocity.y); } }
     private Vector2 velocity;
     bool grounded = false;
 
     float currentJumpTime;
     float targetGravity;
+    bool jumping;
     bool justStomped;
 
     private List<KeyData> acquiredKeys = new List<KeyData>();
@@ -56,14 +70,9 @@ public class CharacterController : MonoBehaviour
     public void AddKey(KeyData key)
     {
         if (!acquiredKeys.Contains(key)) acquiredKeys.Add(key);
-
     }
     public bool CanOpenDoor(Door door)
     {
-        if (acquiredKeys.Count > 0)
-        {
-            Debug.Log("Door key: " + door.key.name + ", have: " + acquiredKeys[0].name);
-        }
         return acquiredKeys.Contains(door.key);
     }
 
@@ -77,25 +86,31 @@ public class CharacterController : MonoBehaviour
         }
         else
         {
-            velocity.y += targetGravity * Time.fixedDeltaTime;
+            velocity.y = Mathf.Clamp(velocity.y + targetGravity * Time.fixedDeltaTime, -terminalVelocity, terminalVelocity);
         }
 
         if (Input.GetAxis("Jump") > Mathf.Epsilon)
         {
-            if (grounded)
+            if (jumping == false || grounded)
             {
-                grounded = false;
-                velocity.y = jumpPower;
-                currentJumpTime = 0;
-                targetGravity = upwardsGravity;
+                if (currentJumps > 0)
+                {
+                    jumping = true;
+                    grounded = false;
+                    velocity.y = jumpPower * Mathf.Pow(jumpMultPerExtraJump, maxJumps - currentJumps);
+                    currentJumpTime = 0;
+                    targetGravity = upwardsGravity;
+                    currentJumps--;
+                }
             }
-            else if (velocity.y < 0)
+            if (velocity.y < 0)
             {
                 targetGravity = downwardsGravity;
             }
         }
         else
         {
+            jumping = false;
             if (currentJumpTime > minJumpTime || velocity.y < 0)
             {
                 targetGravity = downwardsGravity;
@@ -166,6 +181,7 @@ public class CharacterController : MonoBehaviour
                         if (velocity.y < 0)
                         {
                             grounded = true;
+                            currentJumps = maxJumps;
                         }
                         if (Mathf.Abs(velocity.y) > rch.distance)
                         {
@@ -209,15 +225,23 @@ public class CharacterController : MonoBehaviour
 
     public void Kill()
     {
+        Destroy(Instantiate(playerDeathSoundPrefab), playerDeathSoundPrefab.clip.length);
         transform.position = lastRespawnPos;
     }
 
 
     public void SetRespawnPoint(RespawnPoint point)
     {
+        if (Vector3.Distance(point.transform.position, lastRespawnPos) <= 1) return;
+        if (lastRespawn == null)
+        {
+            respawnParticles = Instantiate(respawnParticles, point.transform.position, Quaternion.identity);
+        }
+        respawnParticles.Stop(true);
+        respawnParticles.transform.position = point.transform.position;
+        respawnParticles.Play(true);
         lastRespawn = point;
         lastRespawnPos = point.transform.position;
-        Debug.Log("Set respawn point");
     }
 
     void CheckForCollidable(Collider2D collider)

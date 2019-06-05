@@ -12,9 +12,7 @@ public class Enemy : MonoBehaviour, ICollidable
     public void CollidedWithCharacterController(CharacterController characterController)
     {
 
-        Vector3 directionToPlayer = characterController.transform.position - transform.position;
-
-        if (directionToPlayer.y > 0 && directionToPlayer.y > Mathf.Abs(directionToPlayer.x))
+        if (characterController.transform.position.y > transform.position.y)
         {
             Kill();
             characterController.EnemyStomped();
@@ -27,7 +25,6 @@ public class Enemy : MonoBehaviour, ICollidable
 
     void Kill()
     {
-        //Debug.Log("Enemy killed");
         Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity, transform.parent), 5);
         gameObject.SetActive(false);
         Invoke("Respawn", 5);

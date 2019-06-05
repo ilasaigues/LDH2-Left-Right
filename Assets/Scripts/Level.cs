@@ -4,16 +4,28 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 public class Level : MonoBehaviour
 {
-    public List<LevelChunk> chunks = new List<LevelChunk>();
     public Color tilemapColor = Color.white;
+    [UnityEngine.Serialization.FormerlySerializedAs("BackgroundColor")]
+    public Color hazardColor = Color.white;
+
+    private List<LevelChunk> chunks = new List<LevelChunk>();
     // Start is called before the first frame update
     void Start()
     {
+        chunks = new List<LevelChunk>(GetComponentsInChildren<LevelChunk>());
         foreach (Tilemap tilemapRenderer in GetComponentsInChildren<Tilemap>())
         {
             tilemapRenderer.color = tilemapColor;
         }
 
+        foreach (var spike in GetComponentsInChildren<Spike>())
+        {
+            spike.GetComponent<Tilemap>().color = hazardColor;
+        }
+        foreach (var enemy in GetComponentsInChildren<Enemy>())
+        {
+            enemy.GetComponent<SpriteRenderer>().color = hazardColor;
+        }
     }
 
     // Update is called once per frame
@@ -32,5 +44,10 @@ public class Level : MonoBehaviour
     float Modulo(float a, float b)
     {
         return a - b * Mathf.Floor(a / b);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Start();
     }
 }
