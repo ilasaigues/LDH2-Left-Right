@@ -9,8 +9,9 @@ public class Door : MonoBehaviour, ICollidable
 
     public static System.Action<KeyData> OnDoorOpen = (kd) => { };
 
+    public SoundValue doorOpenSound;
 
-    public AudioSource doorOpenSoundPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,7 +36,7 @@ public class Door : MonoBehaviour, ICollidable
         {
             OnDoorOpen(key);
             OnDoorOpen -= DoorOpened;
-            Destroy(Instantiate(doorOpenSoundPrefab).gameObject, doorOpenSoundPrefab.clip.length);
+            Director.GetManager<SoundManager>().PlaySound(doorOpenSound);
         }
     }
     private void OnDrawGizmos()

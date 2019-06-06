@@ -48,14 +48,6 @@ public class Enemy : MonoBehaviour, ICollidable
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        CharacterController charController = collision.gameObject.GetComponent<CharacterController>();
-        if (charController)
-        {
-            CollidedWithCharacterController(charController);
-        }
-    }
     private void OnDrawGizmos()
     {
         for (int i = 0; i < targets.Count; i++)

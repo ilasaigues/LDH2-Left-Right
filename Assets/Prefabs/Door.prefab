@@ -71,7 +71,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 482361ef5a7c0ed499089db026d37ab1, type: 3}
-  m_Color: {r: 0, g: 1, b: 0, a: 1}
+  m_Color: {r: 0.52156866, g: 0.47450984, b: 0.67058825, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
@@ -120,5 +120,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: {fileID: 11400000, guid: 0990c19204620b24ab1fbfdb40f2cd1c, type: 2}
-  doorOpenSoundPrefab: {fileID: 7944114356178784334, guid: 1e9504e880fed9f4ab8137f9eff819f8,
-    type: 3}
+  doorOpenSound: {fileID: 11400000, guid: 3415d87590ac958408df022ba1565522, type: 2}

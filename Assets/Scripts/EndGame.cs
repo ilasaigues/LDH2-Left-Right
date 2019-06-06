@@ -15,6 +15,7 @@ public class EndGame : MonoBehaviour, ICollidable
     public UnityEngine.UI.Text creditsText;
     public AudioSource partyHornSound;
     public AudioSource ominousSound;
+
     void Start()
     {
         character = FindObjectOfType<CharacterController>();

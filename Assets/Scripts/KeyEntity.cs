@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KeyEntity : MonoBehaviour
+public class KeyEntity : MonoBehaviour, ICollidable
 {
 
     public KeyData data;
     public float hoverPower = .2f;
     public float hoverRate = 1;
-    public AudioSource pickupSoundSource;
+    public SoundValue keyPickupSound;
 
     public static System.Action<KeyData> OnKeyPickup = (kd) => { };
-
 
     Vector3 startLocalPos;
     private void Awake()
@@ -38,20 +37,16 @@ public class KeyEntity : MonoBehaviour
         if (this.data == data) Destroy(gameObject);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        CharacterController character = collision.gameObject.GetComponent<CharacterController>();
-        if (character)
-        {
-            Destroy(Instantiate(pickupSoundSource).gameObject, pickupSoundSource.clip.length);
-            character.AddKey(data);
-            OnKeyPickup(data);
-            OnKeyPickup -= KeyPickedUp;
-        }
-    }
-
     private void OnDrawGizmos()
     {
         Start();
+    }
+
+    public void CollidedWithCharacterController(CharacterController characterController)
+    {
+        Director.GetManager<SoundManager>().PlaySound(keyPickupSound);
+        characterController.AddKey(data);
+        OnKeyPickup(data);
+        OnKeyPickup -= KeyPickedUp;
     }
 }
