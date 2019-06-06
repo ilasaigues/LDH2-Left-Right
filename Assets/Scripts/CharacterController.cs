@@ -17,6 +17,7 @@ public class CharacterController : MonoBehaviour
     public float jumpCooldown = .15f;
 
     public ParticleSystem respawnParticles;
+    public ParticleSystem playerDeathParticles;
     public AudioSource playerDeathSoundPrefab;
 
     public Transform[] edgesRight;
@@ -26,6 +27,7 @@ public class CharacterController : MonoBehaviour
 
     public int maxJumps = 1;
 
+    public float respawnTime;
 
     private int currentJumps = 1;
 
@@ -58,9 +60,9 @@ public class CharacterController : MonoBehaviour
 
     }
 
-    public void Lock()
+    public void Lock(bool locked = true)
     {
-        locked = true;
+        this.locked = locked;
     }
 
     void FixedUpdate()
@@ -230,9 +232,25 @@ public class CharacterController : MonoBehaviour
 
     public void Kill()
     {
+
         Destroy(Instantiate(playerDeathSoundPrefab), playerDeathSoundPrefab.clip.length);
-        transform.position = lastRespawnPos;
+
+        Destroy(Instantiate(playerDeathParticles, transform.position, Quaternion.identity).gameObject, respawnTime);
+
+        GetComponent<Collider2D>().enabled = false;
+        GetComponent<SpriteRenderer>().enabled = false;
+        Lock();
+        Invoke("Respawn", respawnTime);
     }
+
+    void Respawn()
+    {
+        transform.position = lastRespawnPos;
+        GetComponent<Collider2D>().enabled = true;
+        GetComponent<SpriteRenderer>().enabled = true;
+        Lock(false);
+    }
+
 
 
     public void SetRespawnPoint(RespawnPoint point)
