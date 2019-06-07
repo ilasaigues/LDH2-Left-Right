@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9c0e130706e35a4b8e5a39b7449b8a4, type: 3}
-  m_Name: EnemyDeath
+  m_Name: PartyHorn
   m_EditorClassIdentifier: 
-  value: {fileID: 8300000, guid: f8f0cee7362f9534983af50d538d1e03, type: 3}
+  value: {fileID: 8300000, guid: 0a53422df1f165843890ae670ba441b8, type: 3}
   volume: 1
   loop: 0
   mixerGroup: {fileID: 0}

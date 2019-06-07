@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathParticle: {fileID: 2300907951443530247, guid: 97e6dffbb0fbd8a4a9260d924f22cf1f,
     type: 3}
+  enemyDeathSound: {fileID: 11400000, guid: 1d8f44c710c306c46a6cb259fd3129ea, type: 2}
   targets: []
   movementSpeed: 3
 --- !u!58 &5419290947138610775

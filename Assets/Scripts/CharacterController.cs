@@ -31,7 +31,7 @@ public class CharacterController : MonoBehaviour
     private bool _locked;
     private List<KeyData> _acquiredKeys = new List<KeyData>();
     bool _jumpedThisFrame = false;
-
+    bool _inputLocked = false;
     public void AddKey(KeyData key)
     {
         if (!_acquiredKeys.Contains(key)) _acquiredKeys.Add(key);
@@ -57,19 +57,21 @@ public class CharacterController : MonoBehaviour
         Vector2 _velocity = _rb2D.velocity;
         bool _jumpTap = false;
 
-        if (Input.GetAxisRaw("Jump") != 0)
+        if (!_inputLocked)
         {
-            if (_jumping == false) _jumpTap = _jumping = true;
-        }
-        else
-        {
-            _jumping = false;
-            if (_currentJumpTime > minJumpTime || _velocity.y < 0)
+            if (Input.GetAxisRaw("Jump") != 0)
             {
-                _rb2D.gravityScale = fallingGravityScale;
+                if (_jumping == false) _jumpTap = _jumping = true;
+            }
+            else
+            {
+                _jumping = false;
+                if (_currentJumpTime > minJumpTime || _velocity.y < 0)
+                {
+                    _rb2D.gravityScale = fallingGravityScale;
+                }
             }
         }
-
 
         if ((_remainingJumps > 0) && _jumpTap)
         {
@@ -86,7 +88,7 @@ public class CharacterController : MonoBehaviour
             _rb2D.gravityScale = fallingGravityScale;
         }
 
-        float targetHorizontalSpeed = Input.GetAxisRaw("Horizontal") * speed;
+        float targetHorizontalSpeed = _inputLocked ? 0 : Input.GetAxisRaw("Horizontal") * speed;
 
         if (_velocity.y > 0) _currentJumpTime += Time.fixedDeltaTime;
 
@@ -127,6 +129,11 @@ public class CharacterController : MonoBehaviour
     {
         _locked = setLock;
         _rb2D.simulated = !_locked;
+    }
+
+    public void LockControls(bool setLock = true)
+    {
+        _inputLocked = setLock;
     }
 
     public void EnemyStomped()

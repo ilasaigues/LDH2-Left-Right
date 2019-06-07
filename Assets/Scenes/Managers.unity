@@ -184,6 +184,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e32da279d80dc464682f53bdfce2bc32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  master: {fileID: 24100000, guid: e3188ef9d25984b429f4032c276799ff, type: 2}
+  defaultSoundGroup: {fileID: 243511707546080270, guid: e3188ef9d25984b429f4032c276799ff,
+    type: 2}
 --- !u!4 &450972123
 Transform:
   m_ObjectHideFlags: 0

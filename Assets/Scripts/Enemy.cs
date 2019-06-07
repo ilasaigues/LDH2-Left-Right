@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour, ICollidable
 {
     public GameObject deathParticle;
+    public SoundValue enemyDeathSound;
     public List<Transform> targets = new List<Transform>();
     public float movementSpeed = 3;
     int currentTarget = 0;
@@ -26,6 +27,7 @@ public class Enemy : MonoBehaviour, ICollidable
     void Kill()
     {
         Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity, transform.parent), 5);
+        Director.GetManager<SoundManager>().PlaySound(enemyDeathSound);
         gameObject.SetActive(false);
         Invoke("Respawn", 5);
     }
